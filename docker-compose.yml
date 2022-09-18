@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - "DATABASE_HOST=db"
+      - "DATABASE_PORT=5432"
+      - "DATABASE_USER=postgres"
+      - "DATABASE_PASSWORD=mysecretpassword1234"
+    depends_on:
+      - db
+      - web
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/var/www/hello
+  db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=mysecretpassword1234"
+  web:
+    build: ./containers/web_nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - .:/var/www/hello
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
